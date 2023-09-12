@@ -27,7 +27,9 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
 
     private var recorder: MediaRecorder? = null
     val mediaPlayer = MediaPlayer()
-    val outputPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString() + "/CallRec/myRec${Random.nextInt()}.3gp"
+    val outputPath =
+        Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString() +
+                "/CallRec/myRec${Random.nextInt()}.3gp"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,7 +65,6 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
             start()
         }
     }
-
 
     private fun startRecording() {
         if (!hasRecordAudioPermission()) {
