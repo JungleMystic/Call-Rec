@@ -10,6 +10,6 @@
     <string name="stop">Stop</string>
     <string name="play">Play</string>
     <string name="stop_play">Stop Play</string>
-    <string name="accessibility_service_label">Call Rec</string>
+    <string name="accessibility_service_label">CallRec</string>
     <string name="accessibility_service_description">Record both Incoming and Outgoing Calls</string>
 </resources>
