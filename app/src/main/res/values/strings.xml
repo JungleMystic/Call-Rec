@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Voice Rec</string>
 
-    <string name="app_short_desc">Simple app to record calls</string>
+    <string name="app_short_desc">Simple app to record voice</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

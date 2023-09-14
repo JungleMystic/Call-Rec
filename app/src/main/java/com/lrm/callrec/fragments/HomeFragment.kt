@@ -25,7 +25,8 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        requireActivity().window.statusBarColor = ContextCompat.getColor(requireContext(), R.color.blue)
+        requireActivity().window.statusBarColor =
+            ContextCompat.getColor(requireContext(), R.color.blue)
     }
 
     override fun onCreateView(
@@ -40,10 +41,7 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        if (!checkPermissions()) {
-            showPermissionRequiredDialog()
-            requestPermissionsRequired()
-        }
+        if (!checkPermissions()) showPermissionRequiredDialog()
 
     }
 
@@ -73,7 +71,10 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             EasyPermissions.hasPermissions(requireContext(), Manifest.permission.READ_MEDIA_AUDIO)
         } else {
-            EasyPermissions.hasPermissions(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE)
+            EasyPermissions.hasPermissions(
+                requireContext(),
+                Manifest.permission.READ_EXTERNAL_STORAGE
+            )
         }
     }
 
@@ -96,16 +97,22 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         }
     }
 
-    private fun hasWriteExternalStoragePermission(): Boolean =
-        EasyPermissions.hasPermissions(requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)
+    private fun hasWriteExternalStoragePermission(): Boolean {
+        return if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            EasyPermissions.hasPermissions(requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        } else return true
+    }
+
 
     private fun requestWriteExternalStoragePermission() {
-        EasyPermissions.requestPermissions(
-            this,
-            "Permission is required to record audio",
-            WRITE_EXTERNAL_STORAGE_PERMISSION_CODE,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
-        )
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            EasyPermissions.requestPermissions(
+                this,
+                "Permission is required to record audio",
+                WRITE_EXTERNAL_STORAGE_PERMISSION_CODE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+            )
+        }
     }
 
     override fun onRequestPermissionsResult(
@@ -144,10 +151,8 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
             return false
         }
 
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-            if (!hasWriteExternalStoragePermission()) {
-                return false
-            }
+        if (!hasWriteExternalStoragePermission()) {
+            return false
         }
 
         if (!hasReadAudioPermission()) {
