@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Call Rec</string>
+    <string name="app_name">Voice Rec</string>
 
     <string name="app_short_desc">Simple app to record calls</string>
 
@@ -10,6 +10,4 @@
     <string name="stop">Stop</string>
     <string name="play">Play</string>
     <string name="stop_play">Stop Play</string>
-    <string name="accessibility_service_label">CallRec</string>
-    <string name="accessibility_service_description">Record both Incoming and Outgoing Calls</string>
 </resources>
