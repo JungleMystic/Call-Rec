@@ -9,15 +9,15 @@
 
     <com.airbnb.lottie.LottieAnimationView
         android:id="@+id/logo_anim"
-        android:layout_width="wrap_content"
+        android:layout_width="300dp"
         android:layout_height="300dp"
-        app:lottie_rawRes="@raw/call_rec_anim"
+        android:layout_marginBottom="-10dp"
+        app:layout_constraintBottom_toTopOf="@id/app_name"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:lottie_autoPlay="true"
         app:lottie_loop="true"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/app_name"
-        android:layout_marginBottom="-10dp"/>
+        app:lottie_rawRes="@raw/voice_rec_anim" />
 
     <TextView
         android:id="@+id/app_name"

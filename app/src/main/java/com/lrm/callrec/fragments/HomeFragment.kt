@@ -15,6 +15,7 @@ import com.lrm.callrec.constants.READ_AUDIO_PERMISSION_CODE
 import com.lrm.callrec.constants.RECORD_AUDIO_PERMISSION_CODE
 import com.lrm.callrec.constants.WRITE_EXTERNAL_STORAGE_PERMISSION_CODE
 import com.lrm.callrec.databinding.FragmentHomeBinding
+import com.lrm.callrec.utils.VoiceRecorder
 import com.vmadalin.easypermissions.EasyPermissions
 import com.vmadalin.easypermissions.dialogs.SettingsDialog
 
@@ -22,6 +23,8 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
 
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
+
+    private lateinit var voiceRec: VoiceRecorder
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,17 +44,48 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        if (!checkPermissions()) showPermissionRequiredDialog()
+        voiceRec = VoiceRecorder(requireContext())
 
+        if (!checkPermissions()) showPermissionsRequiredDialog()
+
+        binding.startRec.setOnClickListener { startRecording() }
+        binding.pauseRec.setOnClickListener { pauseRecording() }
+        binding.resumeRec.setOnClickListener { resumeRecording() }
+        binding.stopRec.setOnClickListener { stopRecording() }
     }
 
     private fun startRecording() {
-        checkPermissions()
+        if (!checkPermissions()){
+            requestPermissionsRequired()
+            return
+        }
+        voiceRec.startRecording()
 
+        binding.startRec.visibility = View.GONE
+        binding.pauseStopLl.visibility = View.VISIBLE
         Toast.makeText(requireContext(), "Recording Audio...", Toast.LENGTH_SHORT).show()
     }
 
+    private fun pauseRecording() {
+        voiceRec.pauseRecording()
+        binding.recordingStatus.visibility = View.VISIBLE
+        binding.resumeRec.visibility = View.VISIBLE
+        binding.pauseRec.visibility = View.GONE
+        binding.recordingStatus.text = voiceRec.recordingStatus
+    }
+
+    private fun resumeRecording() {
+        voiceRec.resumeRecording()
+        binding.recordingStatus.visibility = View.GONE
+        binding.resumeRec.visibility = View.GONE
+        binding.pauseRec.visibility = View.VISIBLE
+    }
+
     private fun stopRecording() {
+        voiceRec.stopRecording()
+        binding.pauseStopLl.visibility = View.GONE
+        binding.startRec.visibility = View.VISIBLE
+        binding.recordingStatus.visibility = View.GONE
         Toast.makeText(requireContext(), "Recording stopped...", Toast.LENGTH_SHORT).show()
     }
 
@@ -100,7 +134,10 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     private fun hasWriteExternalStoragePermission(): Boolean {
         return if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
             EasyPermissions.hasPermissions(requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)
-        } else return true
+        } else {
+            voiceRec.createDirectory()
+            true
+        }
     }
 
 
@@ -135,7 +172,7 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         if (!checkPermissions()) requestPermissionsRequired()
     }
 
-    private fun showPermissionRequiredDialog() {
+    private fun showPermissionsRequiredDialog() {
         MaterialAlertDialogBuilder(requireContext())
             .setTitle("Permissions Request")
             .setMessage("This app requires some permissions, So please allow them.")

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -11,10 +10,10 @@
         android:id="@+id/app_bar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        app:layout_constraintStart_toStartOf="parent"
+        android:background="@color/blue"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:background="@color/blue">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <com.google.android.material.appbar.MaterialToolbar
             android:layout_width="match_parent"
@@ -28,16 +27,16 @@
                     android:id="@+id/app_name"
                     android:layout_width="wrap_content"
                     android:layout_height="0dp"
-                    android:text="@string/app_name"
-                    android:textSize="22sp"
-                    android:textColor="@color/white"
-                    android:fontFamily="@font/poppins_bold"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
                     android:layout_marginStart="10dp"
                     android:layout_marginBottom="2dp"
-                    android:gravity="center_vertical"/>
+                    android:fontFamily="@font/poppins_bold"
+                    android:gravity="center_vertical"
+                    android:text="@string/app_name"
+                    android:textColor="@color/white"
+                    android:textSize="22sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -45,51 +44,62 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <LinearLayout
+    <ImageView
+        android:id="@+id/start_rec"
+        android:layout_width="60dp"
+        android:layout_height="70dp"
+        android:layout_marginBottom="60dp"
+        android:src="@drawable/app_icon"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/recording_status"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/app_bar"
-        app:layout_constraintBottom_toBottomOf="parent"
+        tools:text="Paused"
+        app:layout_constraintBottom_toTopOf="@id/pause_stop_ll"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:orientation="vertical">
+        android:layout_marginBottom="20dp"
+        android:textSize="18sp"
+        android:textColor="@color/black"
+        android:fontFamily="@font/poppins_regular"
+        android:visibility="gone"/>
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/start_rec"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:backgroundTint="@color/blue"
-            android:text="@string/start"
-            android:textColor="@color/white"/>
+    <LinearLayout
+        android:id="@+id/pause_stop_ll"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="60dp"
+        android:orientation="horizontal"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:visibility="visible">
 
-        <com.google.android.material.button.MaterialButton
+        <ImageView
+            android:id="@+id/pause_rec"
+            android:layout_width="60dp"
+            android:layout_height="70dp"
+            android:src="@drawable/pause_icon" />
+
+        <ImageView
+            android:id="@+id/resume_rec"
+            android:layout_width="60dp"
+            android:layout_height="70dp"
+            android:src="@drawable/play_icon"
+            android:visibility="gone"/>
+
+
+        <ImageView
             android:id="@+id/stop_rec"
-            style="@style/Widget.Material3.Button.OutlinedButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:backgroundTint="@color/white"
-            android:layout_marginTop="20dp"
-            android:text="@string/stop"
-            android:textColor="@android:color/holo_red_light"/>
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/play_rec"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:backgroundTint="@color/blue"
-            android:layout_marginTop="20dp"
-            android:text="@string/play"
-            android:textColor="@color/white"/>
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/stop_play"
-            style="@style/Widget.Material3.Button.OutlinedButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:backgroundTint="@color/white"
-            android:layout_marginTop="20dp"
-            android:text="@string/stop_play"
-            android:textColor="@android:color/holo_red_light"/>
+            android:layout_width="60dp"
+            android:layout_height="70dp"
+            android:layout_marginStart="20dp"
+            android:src="@drawable/stop_rec_icon" />
 
     </LinearLayout>
 
