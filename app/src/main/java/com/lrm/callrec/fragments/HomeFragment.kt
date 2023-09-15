@@ -1,6 +1,10 @@
 package com.lrm.callrec.fragments
 
 import android.Manifest
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -15,9 +19,11 @@ import com.lrm.callrec.constants.READ_AUDIO_PERMISSION_CODE
 import com.lrm.callrec.constants.RECORD_AUDIO_PERMISSION_CODE
 import com.lrm.callrec.constants.WRITE_EXTERNAL_STORAGE_PERMISSION_CODE
 import com.lrm.callrec.databinding.FragmentHomeBinding
+import com.lrm.callrec.utils.TimerService
 import com.lrm.callrec.utils.VoiceRecorder
 import com.vmadalin.easypermissions.EasyPermissions
 import com.vmadalin.easypermissions.dialogs.SettingsDialog
+import kotlin.math.roundToInt
 
 class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
 
@@ -25,6 +31,9 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     private val binding get() = _binding!!
 
     private lateinit var voiceRec: VoiceRecorder
+    private var isRunning = false
+    private lateinit var serviceIntent: Intent
+    private var time = 0.0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,6 +54,8 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         super.onViewCreated(view, savedInstanceState)
 
         voiceRec = VoiceRecorder(requireContext())
+        serviceIntent = Intent(requireActivity().applicationContext, TimerService::class.java)
+        requireActivity().registerReceiver(updateTime, IntentFilter(TimerService.TIMER_UPDATED))
 
         if (!checkPermissions()) showPermissionsRequiredDialog()
 
@@ -54,13 +65,32 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         binding.stopRec.setOnClickListener { stopRecording() }
     }
 
+    private val updateTime: BroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            time = intent.getDoubleExtra(TimerService.TIMER_EXTRA, 0.0)
+            binding.timer.text = getTimeStringFromDouble(time)
+        }
+    }
+
+    private fun getTimeStringFromDouble(time: Double): String {
+        val resultInt = time.roundToInt()
+        val hours = resultInt % 86400 / 3600
+        val minutes = resultInt % 86400 % 3600 / 60
+        val seconds = resultInt % 86400 % 3600 % 60
+        return String.format("%02d:%02d:%02d", hours, minutes, seconds)
+    }
+
     private fun startRecording() {
-        if (!checkPermissions()){
+        if (!checkPermissions()) {
             requestPermissionsRequired()
             return
         }
         voiceRec.startRecording()
-
+        if (!isRunning) {
+            serviceIntent.putExtra(TimerService.TIMER_EXTRA, time)
+            requireActivity().startService(serviceIntent)
+            isRunning = true
+        }
         binding.startRec.visibility = View.GONE
         binding.pauseStopLl.visibility = View.VISIBLE
         Toast.makeText(requireContext(), "Recording Audio...", Toast.LENGTH_SHORT).show()
@@ -68,6 +98,10 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
 
     private fun pauseRecording() {
         voiceRec.pauseRecording()
+        if (isRunning) {
+            requireActivity().stopService(serviceIntent)
+            isRunning = false
+        }
         binding.recordingStatus.visibility = View.VISIBLE
         binding.resumeRec.visibility = View.VISIBLE
         binding.pauseRec.visibility = View.GONE
@@ -76,16 +110,25 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
 
     private fun resumeRecording() {
         voiceRec.resumeRecording()
-        binding.recordingStatus.visibility = View.GONE
+        if (!isRunning) {
+            serviceIntent.putExtra(TimerService.TIMER_EXTRA, time)
+            requireActivity().startService(serviceIntent)
+            isRunning = true
+        }
+        binding.recordingStatus.visibility = View.INVISIBLE
         binding.resumeRec.visibility = View.GONE
         binding.pauseRec.visibility = View.VISIBLE
     }
 
     private fun stopRecording() {
         voiceRec.stopRecording()
-        binding.pauseStopLl.visibility = View.GONE
+        requireActivity().stopService(serviceIntent)
+        isRunning = false
+        time = 0.0
+        binding.timer.text = getTimeStringFromDouble(time)
+        binding.pauseStopLl.visibility = View.INVISIBLE
         binding.startRec.visibility = View.VISIBLE
-        binding.recordingStatus.visibility = View.GONE
+        binding.recordingStatus.visibility = View.INVISIBLE
         Toast.makeText(requireContext(), "Recording stopped...", Toast.LENGTH_SHORT).show()
     }
 
@@ -133,7 +176,10 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
 
     private fun hasWriteExternalStoragePermission(): Boolean {
         return if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-            EasyPermissions.hasPermissions(requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            EasyPermissions.hasPermissions(
+                requireContext(),
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+            )
         } else {
             voiceRec.createDirectory()
             true
@@ -218,6 +264,7 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        voiceRec.stopRecording()
         _binding = null
     }
 }
