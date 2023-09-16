@@ -1,4 +1,4 @@
-package com.lrm.callrec.fragments
+package com.lrm.voicerec.fragments
 
 import android.Manifest
 import android.os.Build
@@ -9,16 +9,18 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.tabs.TabLayout
-import com.lrm.callrec.R
-import com.lrm.callrec.adapter.ViewPagerFragmentAdapter
-import com.lrm.callrec.constants.READ_AUDIO_PERMISSION_CODE
-import com.lrm.callrec.constants.RECORD_AUDIO_PERMISSION_CODE
-import com.lrm.callrec.constants.WRITE_EXTERNAL_STORAGE_PERMISSION_CODE
-import com.lrm.callrec.databinding.FragmentHomeBinding
-import com.lrm.callrec.utils.VoiceRecorder
+import com.lrm.voicerec.R
+import com.lrm.voicerec.adapter.ViewPagerFragmentAdapter
+import com.lrm.voicerec.constants.READ_AUDIO_PERMISSION_CODE
+import com.lrm.voicerec.constants.RECORD_AUDIO_PERMISSION_CODE
+import com.lrm.voicerec.constants.WRITE_EXTERNAL_STORAGE_PERMISSION_CODE
+import com.lrm.voicerec.databinding.FragmentHomeBinding
+import com.lrm.voicerec.utils.VoiceRecorder
+import com.lrm.voicerec.viewmodel.RecViewModel
 import com.vmadalin.easypermissions.EasyPermissions
 import com.vmadalin.easypermissions.dialogs.SettingsDialog
 
@@ -31,6 +33,8 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     private lateinit var tabLayout: TabLayout
     private lateinit var viewPager2: ViewPager2
     private lateinit var fragmentAdapter: ViewPagerFragmentAdapter
+
+    private val recViewModel: RecViewModel by activityViewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,7 +66,7 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 if (tab != null) {
-                    viewPager2.currentItem = tab.position
+                    recViewModel.setSelectedPage(tab.position)
                 }
             }
 
@@ -73,6 +77,10 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
             }
 
         })
+
+        recViewModel.pageSelected.observe(viewLifecycleOwner) { page ->
+            viewPager2.currentItem = page
+        }
 
         viewPager2.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {

@@ -1,4 +1,4 @@
-package com.lrm.callrec.fragments
+package com.lrm.voicerec.fragments
 
 import android.annotation.SuppressLint
 import android.graphics.Color
@@ -10,7 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import com.lrm.callrec.databinding.FragmentSplashScreenBinding
+import com.lrm.voicerec.databinding.FragmentSplashScreenBinding
 
 @SuppressLint("CustomSplashScreen")
 class SplashScreenFragment : Fragment() {

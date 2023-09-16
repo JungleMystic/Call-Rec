@@ -1,9 +1,9 @@
-package com.lrm.callrec.adapter
+package com.lrm.voicerec.adapter
 
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import com.lrm.callrec.fragments.RecordVoiceFragment
-import com.lrm.callrec.fragments.RecordingsFragment
+import com.lrm.voicerec.fragments.RecordVoiceFragment
+import com.lrm.voicerec.fragments.RecordingsFragment
 
 class ViewPagerFragmentAdapter(
     fragment: Fragment

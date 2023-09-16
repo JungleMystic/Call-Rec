@@ -1,12 +1,12 @@
-package com.lrm.callrec.utils
+package com.lrm.voicerec.utils
 
 import android.content.Context
 import android.media.MediaRecorder
 import android.os.Build
 import android.os.Environment
 import android.util.Log
-import com.lrm.callrec.constants.APP_FOLDER_NAME
-import com.lrm.callrec.constants.TAG
+import com.lrm.voicerec.constants.APP_FOLDER_NAME
+import com.lrm.voicerec.constants.TAG
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date

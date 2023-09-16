@@ -1,4 +1,4 @@
-package com.lrm.callrec.utils
+package com.lrm.voicerec.utils
 
 import android.os.Handler
 import android.os.Looper
@@ -12,7 +12,7 @@ class Timer(listener: OnTimeTickListener) {
     private var handler = Handler(Looper.getMainLooper())
     private lateinit var runnable: Runnable
     private var duration = 0L
-    private var delay = 100L
+    private var delay = 1000L
 
     init {
         runnable = Runnable {

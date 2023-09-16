@@ -1,11 +1,11 @@
 <resources>
     <!-- Base application theme. -->
-    <style name="Base.Theme.CallRec" parent="Theme.Material3.DayNight.NoActionBar">
+    <style name="Base.Theme.VoiceRec" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
         <item name="android:windowLightStatusBar">false</item>
         <item name="android:statusBarColor">@color/blue</item>
     </style>
 
-    <style name="Theme.CallRec" parent="Base.Theme.CallRec" />
+    <style name="Theme.VoiceRec" parent="Base.Theme.VoiceRec" />
 </resources>

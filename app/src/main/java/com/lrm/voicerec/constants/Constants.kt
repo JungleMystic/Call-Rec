@@ -1,4 +1,4 @@
-package com.lrm.callrec.constants
+package com.lrm.voicerec.constants
 
 const val TAG = "MyLogMessages"
 

@@ -10,11 +10,11 @@ plugins {
 }
 
 android {
-    namespace = "com.lrm.callrec"
+    namespace = "com.lrm.voicerec"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.lrm.callrec"
+        applicationId = "com.lrm.voicerec"
         minSdk = 26
         targetSdk = 34
         versionCode = 1
@@ -53,8 +53,8 @@ dependencies {
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
 
     //Navigation Component
-    implementation ("androidx.navigation:navigation-fragment-ktx:2.7.1")
-    implementation ("androidx.navigation:navigation-ui-ktx:2.7.1")
+    implementation ("androidx.navigation:navigation-fragment-ktx:2.7.2")
+    implementation ("androidx.navigation:navigation-ui-ktx:2.7.2")
 
     // ViewModel
     implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2")

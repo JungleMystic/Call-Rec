@@ -1,10 +1,10 @@
-package com.lrm.callrec
+package com.lrm.voicerec
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
-import com.lrm.callrec.databinding.ActivityMainBinding
+import com.lrm.voicerec.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
