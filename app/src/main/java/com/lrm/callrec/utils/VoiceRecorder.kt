@@ -69,7 +69,7 @@ class VoiceRecorder(private val context: Context) {
     }
 
     private fun getOutputPath(): String {
-        return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString() + "/Voice Rec/${getFileName()}"
+        return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString() + "/$APP_FOLDER_NAME/${getFileName()}"
     }
 
     private fun getFileName(): String {

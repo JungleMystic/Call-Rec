@@ -1,36 +1,36 @@
 package com.lrm.callrec.fragments
 
 import android.Manifest
-import android.content.BroadcastReceiver
 import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
 import android.os.Build
 import android.os.Bundle
+import android.os.VibrationEffect
+import android.os.Vibrator
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.lrm.callrec.R
 import com.lrm.callrec.constants.READ_AUDIO_PERMISSION_CODE
 import com.lrm.callrec.constants.RECORD_AUDIO_PERMISSION_CODE
+import com.lrm.callrec.constants.TAG
 import com.lrm.callrec.constants.WRITE_EXTERNAL_STORAGE_PERMISSION_CODE
 import com.lrm.callrec.databinding.FragmentRecordVoiceBinding
-import com.lrm.callrec.utils.TimerService
+import com.lrm.callrec.utils.Timer
 import com.lrm.callrec.utils.VoiceRecorder
 import com.vmadalin.easypermissions.EasyPermissions
 import com.vmadalin.easypermissions.dialogs.SettingsDialog
-import kotlin.math.roundToInt
 
-class RecordVoiceFragment : Fragment(), EasyPermissions.PermissionCallbacks {
+class RecordVoiceFragment : Fragment(), EasyPermissions.PermissionCallbacks, Timer.OnTimeTickListener {
     private var _binding: FragmentRecordVoiceBinding? = null
     private val binding get() = _binding!!
 
     private lateinit var voiceRec: VoiceRecorder
-    private var isRunning = false
-    private lateinit var serviceIntent: Intent
-    private var time = 0.0
+    private lateinit var timer: Timer
+    private lateinit var vibrator: Vibrator
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -45,8 +45,8 @@ class RecordVoiceFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         super.onViewCreated(view, savedInstanceState)
 
         voiceRec = VoiceRecorder(requireContext())
-        serviceIntent = Intent(requireActivity().applicationContext, TimerService::class.java)
-        requireActivity().registerReceiver(updateTime, IntentFilter(TimerService.TIMER_UPDATED))
+        timer = Timer(this)
+        vibrator = requireContext().getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
 
         binding.startRec.setOnClickListener { startRecording() }
         binding.pauseRec.setOnClickListener { pauseRecording() }
@@ -54,33 +54,17 @@ class RecordVoiceFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         binding.stopRec.setOnClickListener { stopRecording() }
     }
 
-    private val updateTime: BroadcastReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
-            time = intent.getDoubleExtra(TimerService.TIMER_EXTRA, 0.0)
-            binding.timer.text = getTimeStringFromDouble(time)
-        }
-    }
-
-
-    private fun getTimeStringFromDouble(time: Double): String {
-        val resultInt = time.roundToInt()
-        val hours = resultInt % 86400 / 3600
-        val minutes = resultInt % 86400 % 3600 / 60
-        val seconds = resultInt % 86400 % 3600 % 60
-        return String.format("%02d:%02d:%02d", hours, minutes, seconds)
-    }
-
     private fun startRecording() {
         if (!checkPermissions()) {
             showPermissionsRequiredDialog()
             return
         }
+
         voiceRec.startRecording()
-        if (!isRunning) {
-            serviceIntent.putExtra(TimerService.TIMER_EXTRA, time)
-            requireActivity().startService(serviceIntent)
-            isRunning = true
-        }
+        timer.startTimer()
+        smallVibration()
+
+        binding.timer.visibility = View.VISIBLE
         binding.startRec.visibility = View.GONE
         binding.pauseStopLl.visibility = View.VISIBLE
         Toast.makeText(requireContext(), "Recording Audio...", Toast.LENGTH_SHORT).show()
@@ -88,10 +72,9 @@ class RecordVoiceFragment : Fragment(), EasyPermissions.PermissionCallbacks {
 
     private fun pauseRecording() {
         voiceRec.pauseRecording()
-        if (isRunning) {
-            requireActivity().stopService(serviceIntent)
-            isRunning = false
-        }
+        timer.pauseTimer()
+        smallVibration()
+
         binding.recordingStatus.visibility = View.VISIBLE
         binding.resumeRec.visibility = View.VISIBLE
         binding.pauseRec.visibility = View.GONE
@@ -100,11 +83,9 @@ class RecordVoiceFragment : Fragment(), EasyPermissions.PermissionCallbacks {
 
     private fun resumeRecording() {
         voiceRec.resumeRecording()
-        if (!isRunning) {
-            serviceIntent.putExtra(TimerService.TIMER_EXTRA, time)
-            requireActivity().startService(serviceIntent)
-            isRunning = true
-        }
+        timer.startTimer()
+        smallVibration()
+
         binding.recordingStatus.visibility = View.INVISIBLE
         binding.resumeRec.visibility = View.GONE
         binding.pauseRec.visibility = View.VISIBLE
@@ -112,14 +93,24 @@ class RecordVoiceFragment : Fragment(), EasyPermissions.PermissionCallbacks {
 
     private fun stopRecording() {
         voiceRec.stopRecording()
-        requireActivity().stopService(serviceIntent)
-        isRunning = false
-        time = 0.0
-        binding.timer.text = getTimeStringFromDouble(time)
+        timer.stopTimer()
+        smallVibration()
+
+        binding.timer.text = resources.getString(R.string.chronometer_text)
+        binding.timer.visibility = View.INVISIBLE
         binding.pauseStopLl.visibility = View.INVISIBLE
         binding.startRec.visibility = View.VISIBLE
         binding.recordingStatus.visibility = View.INVISIBLE
         Toast.makeText(requireContext(), "Recording stopped...", Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onTimerTick(duration: String) {
+        binding.timer.text = duration
+        Log.i(TAG, "onTimerTick -> duration -> $duration ")
+    }
+
+    private fun smallVibration() {
+        vibrator.vibrate(VibrationEffect.createOneShot(50, VibrationEffect.DEFAULT_AMPLITUDE))
     }
 
     private fun hasRecordAudioPermission(): Boolean =
@@ -174,7 +165,6 @@ class RecordVoiceFragment : Fragment(), EasyPermissions.PermissionCallbacks {
             true
         }
     }
-
 
     private fun requestWriteExternalStoragePermission() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {

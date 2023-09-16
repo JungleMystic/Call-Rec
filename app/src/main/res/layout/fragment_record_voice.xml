@@ -13,11 +13,14 @@
         android:layout_height="wrap_content"
         android:text="@string/chronometer_text"
         android:textSize="32sp"
+        android:textColor="@color/black"
         android:fontFamily="@font/poppins_regular"
         app:layout_constraintBottom_toTopOf="@id/recording_status"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginBottom="20dp"/>
+        android:layout_marginBottom="20dp"
+        android:visibility="invisible"
+        tools:visibility="visible"/>
 
     <ImageView
         android:id="@+id/start_rec"
@@ -25,6 +28,7 @@
         android:layout_height="70dp"
         android:layout_marginBottom="60dp"
         android:src="@drawable/app_icon"
+        android:contentDescription="@null"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -59,6 +63,7 @@
             android:id="@+id/pause_rec"
             android:layout_width="60dp"
             android:layout_height="70dp"
+            android:contentDescription="@null"
             android:src="@drawable/pause_icon" />
 
         <ImageView
@@ -66,14 +71,15 @@
             android:layout_width="60dp"
             android:layout_height="70dp"
             android:src="@drawable/play_icon"
+            android:contentDescription="@null"
             android:visibility="gone"/>
-
 
         <ImageView
             android:id="@+id/stop_rec"
             android:layout_width="60dp"
             android:layout_height="70dp"
             android:layout_marginStart="20dp"
+            android:contentDescription="@null"
             android:src="@drawable/stop_rec_icon" />
 
     </LinearLayout>
