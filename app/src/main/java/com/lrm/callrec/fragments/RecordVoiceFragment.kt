@@ -1,49 +1,43 @@
 package com.lrm.callrec.fragments
 
 import android.Manifest
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.tabs.TabLayout
-import com.lrm.callrec.R
-import com.lrm.callrec.adapter.ViewPagerFragmentAdapter
 import com.lrm.callrec.constants.READ_AUDIO_PERMISSION_CODE
 import com.lrm.callrec.constants.RECORD_AUDIO_PERMISSION_CODE
 import com.lrm.callrec.constants.WRITE_EXTERNAL_STORAGE_PERMISSION_CODE
-import com.lrm.callrec.databinding.FragmentHomeBinding
+import com.lrm.callrec.databinding.FragmentRecordVoiceBinding
+import com.lrm.callrec.utils.TimerService
 import com.lrm.callrec.utils.VoiceRecorder
 import com.vmadalin.easypermissions.EasyPermissions
 import com.vmadalin.easypermissions.dialogs.SettingsDialog
+import kotlin.math.roundToInt
 
-class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
-
-    private var _binding: FragmentHomeBinding? = null
+class RecordVoiceFragment : Fragment(), EasyPermissions.PermissionCallbacks {
+    private var _binding: FragmentRecordVoiceBinding? = null
     private val binding get() = _binding!!
 
     private lateinit var voiceRec: VoiceRecorder
-    private lateinit var tabLayout: TabLayout
-    private lateinit var viewPager2: ViewPager2
-    private lateinit var fragmentAdapter: ViewPagerFragmentAdapter
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        requireActivity().window.statusBarColor =
-            ContextCompat.getColor(requireContext(), R.color.blue)
-    }
+    private var isRunning = false
+    private lateinit var serviceIntent: Intent
+    private var time = 0.0
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentHomeBinding.inflate(inflater, container, false)
+        _binding = FragmentRecordVoiceBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -51,35 +45,81 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         super.onViewCreated(view, savedInstanceState)
 
         voiceRec = VoiceRecorder(requireContext())
+        serviceIntent = Intent(requireActivity().applicationContext, TimerService::class.java)
+        requireActivity().registerReceiver(updateTime, IntentFilter(TimerService.TIMER_UPDATED))
 
-        if (!checkPermissions()) showPermissionsRequiredDialog()
+        binding.startRec.setOnClickListener { startRecording() }
+        binding.pauseRec.setOnClickListener { pauseRecording() }
+        binding.resumeRec.setOnClickListener { resumeRecording() }
+        binding.stopRec.setOnClickListener { stopRecording() }
+    }
 
-        tabLayout = binding.eventTabLayout
-        viewPager2 = binding.viewPager
-        fragmentAdapter = ViewPagerFragmentAdapter(this)
-        viewPager2.adapter = fragmentAdapter
+    private val updateTime: BroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            time = intent.getDoubleExtra(TimerService.TIMER_EXTRA, 0.0)
+            binding.timer.text = getTimeStringFromDouble(time)
+        }
+    }
 
-        tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
-            override fun onTabSelected(tab: TabLayout.Tab?) {
-                if (tab != null) {
-                    viewPager2.currentItem = tab.position
-                }
-            }
 
-            override fun onTabUnselected(tab: TabLayout.Tab?) {
-            }
+    private fun getTimeStringFromDouble(time: Double): String {
+        val resultInt = time.roundToInt()
+        val hours = resultInt % 86400 / 3600
+        val minutes = resultInt % 86400 % 3600 / 60
+        val seconds = resultInt % 86400 % 3600 % 60
+        return String.format("%02d:%02d:%02d", hours, minutes, seconds)
+    }
 
-            override fun onTabReselected(tab: TabLayout.Tab?) {
-            }
+    private fun startRecording() {
+        if (!checkPermissions()) {
+            showPermissionsRequiredDialog()
+            return
+        }
+        voiceRec.startRecording()
+        if (!isRunning) {
+            serviceIntent.putExtra(TimerService.TIMER_EXTRA, time)
+            requireActivity().startService(serviceIntent)
+            isRunning = true
+        }
+        binding.startRec.visibility = View.GONE
+        binding.pauseStopLl.visibility = View.VISIBLE
+        Toast.makeText(requireContext(), "Recording Audio...", Toast.LENGTH_SHORT).show()
+    }
 
-        })
+    private fun pauseRecording() {
+        voiceRec.pauseRecording()
+        if (isRunning) {
+            requireActivity().stopService(serviceIntent)
+            isRunning = false
+        }
+        binding.recordingStatus.visibility = View.VISIBLE
+        binding.resumeRec.visibility = View.VISIBLE
+        binding.pauseRec.visibility = View.GONE
+        binding.recordingStatus.text = voiceRec.recordingStatus
+    }
 
-        viewPager2.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
-            override fun onPageSelected(position: Int) {
-                super.onPageSelected(position)
-                tabLayout.selectTab(tabLayout.getTabAt(position))
-            }
-        })
+    private fun resumeRecording() {
+        voiceRec.resumeRecording()
+        if (!isRunning) {
+            serviceIntent.putExtra(TimerService.TIMER_EXTRA, time)
+            requireActivity().startService(serviceIntent)
+            isRunning = true
+        }
+        binding.recordingStatus.visibility = View.INVISIBLE
+        binding.resumeRec.visibility = View.GONE
+        binding.pauseRec.visibility = View.VISIBLE
+    }
+
+    private fun stopRecording() {
+        voiceRec.stopRecording()
+        requireActivity().stopService(serviceIntent)
+        isRunning = false
+        time = 0.0
+        binding.timer.text = getTimeStringFromDouble(time)
+        binding.pauseStopLl.visibility = View.INVISIBLE
+        binding.startRec.visibility = View.VISIBLE
+        binding.recordingStatus.visibility = View.INVISIBLE
+        Toast.makeText(requireContext(), "Recording stopped...", Toast.LENGTH_SHORT).show()
     }
 
     private fun hasRecordAudioPermission(): Boolean =
@@ -134,6 +174,7 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
             true
         }
     }
+
 
     private fun requestWriteExternalStoragePermission() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
@@ -212,7 +253,6 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        voiceRec.stopRecording()
         _binding = null
     }
 }
