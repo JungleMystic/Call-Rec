@@ -101,6 +101,7 @@ class RecordVoiceFragment : Fragment(), EasyPermissions.PermissionCallbacks, Tim
         binding.pauseStopLl.visibility = View.INVISIBLE
         binding.startRec.visibility = View.VISIBLE
         binding.recordingStatus.visibility = View.INVISIBLE
+
         Toast.makeText(requireContext(), "Recording stopped...", Toast.LENGTH_SHORT).show()
     }
 
