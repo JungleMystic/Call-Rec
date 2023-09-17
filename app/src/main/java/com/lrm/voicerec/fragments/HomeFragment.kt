@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -29,17 +30,28 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
 
+    private val recViewModel: RecViewModel by activityViewModels()
+
     private lateinit var voiceRec: VoiceRecorder
     private lateinit var tabLayout: TabLayout
     private lateinit var viewPager2: ViewPager2
     private lateinit var fragmentAdapter: ViewPagerFragmentAdapter
 
-    private val recViewModel: RecViewModel by activityViewModels()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         requireActivity().window.statusBarColor =
             ContextCompat.getColor(requireContext(), R.color.blue)
+
+        activity?.onBackPressedDispatcher?.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if(recViewModel.pageSelected.value == 1){
+                    recViewModel.setSelectedPage(0)
+                } else {
+                    isEnabled = false
+                    activity?.onBackPressed()
+                }
+            }
+        })
     }
 
     override fun onCreateView(
