@@ -73,9 +73,10 @@ class RecordVoiceFragment : Fragment(), EasyPermissions.PermissionCallbacks, Tim
         vibrateOnTap()
 
         binding.timer.visibility = View.VISIBLE
+        binding.waveformView.visibility = View.VISIBLE
         binding.startRec.visibility = View.GONE
         binding.pauseStopLl.visibility = View.VISIBLE
-        Toast.makeText(requireContext(), "Recording Audio...", Toast.LENGTH_SHORT).show()
+        //Toast.makeText(requireContext(), "Recording Audio...", Toast.LENGTH_SHORT).show()
     }
 
     private fun pauseRecording() {
@@ -109,6 +110,8 @@ class RecordVoiceFragment : Fragment(), EasyPermissions.PermissionCallbacks, Tim
         binding.pauseStopLl.visibility = View.INVISIBLE
         binding.startRec.visibility = View.VISIBLE
         binding.recordingStatus.visibility = View.INVISIBLE
+        binding.waveformView.clear()
+        binding.waveformView.visibility = View.INVISIBLE
 
         goToRecordings()
 
@@ -121,6 +124,7 @@ class RecordVoiceFragment : Fragment(), EasyPermissions.PermissionCallbacks, Tim
 
     override fun onTimerTick(duration: String) {
         binding.timer.text = duration
+        binding.waveformView.addAmplitude(voiceRec.recorder?.maxAmplitude?.toFloat()!!)
     }
 
     private fun vibrateOnTap() {

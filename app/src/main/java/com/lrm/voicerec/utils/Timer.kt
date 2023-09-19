@@ -12,7 +12,7 @@ class Timer(listener: OnTimeTickListener) {
     private var handler = Handler(Looper.getMainLooper())
     private lateinit var runnable: Runnable
     private var duration = 0L
-    private var delay = 1000L
+    private var delay = 100L
 
     init {
         runnable = Runnable {

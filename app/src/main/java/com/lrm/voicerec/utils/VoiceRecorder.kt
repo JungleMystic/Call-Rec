@@ -15,7 +15,7 @@ import kotlin.random.Random
 
 class VoiceRecorder(private val context: Context) {
 
-    private var recorder: MediaRecorder? = null
+    var recorder: MediaRecorder? = null
     var recordingStatus = "Idle"
 
     fun createDirectory() {

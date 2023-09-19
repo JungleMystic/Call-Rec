@@ -6,6 +6,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".fragments.RecordVoiceFragment">
+    
+    <com.lrm.voicerec.utils.WaveformView
+        android:id="@+id/waveform_view"
+        android:layout_width="match_parent"
+        android:layout_height="400px"
+        app:layout_constraintBottom_toTopOf="@id/timer"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.7"
+        android:visibility="invisible"/>
 
     <TextView
         android:id="@+id/timer"
