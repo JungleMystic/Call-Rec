@@ -34,6 +34,7 @@ import com.lrm.voicerec.constants.WRITE_EXTERNAL_STORAGE_PERMISSION_CODE
 import com.lrm.voicerec.database.AudioFile
 import com.lrm.voicerec.databinding.FragmentHomeBinding
 import com.lrm.voicerec.utils.Timer
+import com.lrm.voicerec.utils.VoicePlayer
 import com.lrm.voicerec.utils.VoiceRecorder
 import com.lrm.voicerec.viewmodel.RecViewModel
 import com.lrm.voicerec.viewmodel.RecViewModelFactory
@@ -53,6 +54,7 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks, Timer.OnTi
     }
 
     private lateinit var voiceRec: VoiceRecorder
+    private lateinit var voicePlayer: VoicePlayer
     private lateinit var timer: Timer
     private lateinit var vibrator: Vibrator
 
@@ -86,6 +88,7 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks, Timer.OnTi
         super.onViewCreated(view, savedInstanceState)
 
         voiceRec = VoiceRecorder(requireContext())
+        voicePlayer = VoicePlayer(requireContext())
         timer = Timer(this)
 
         vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -97,7 +100,7 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks, Timer.OnTi
 
         if (!checkPermissions()) showPermissionsRequiredDialog()
 
-        val adapter = RecListAdapter(requireActivity(), requireContext(), recViewModel)
+        val adapter = RecListAdapter(requireActivity(), requireContext(), recViewModel, voicePlayer)
         binding.recRv.adapter = adapter
 
         recViewModel.getAll.observe(this.viewLifecycleOwner) {list ->
@@ -188,7 +191,7 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks, Timer.OnTi
         }
 
         recViewModel.addFile(voiceRec.fileName, voiceRec.filePath, fileDuration)
-        Log.i(TAG, "stopRecording -> filePath: ${voiceRec.filePath} and fileName: ${voiceRec.fileName}")
+        Log.i(TAG, "stopRecording -> filePath: ${voiceRec.filePath} --- fileName: ${voiceRec.fileName} --- duration: $fileDuration")
         Toast.makeText(requireContext(), "Recording stopped...", Toast.LENGTH_SHORT).show()
     }
 
@@ -360,11 +363,13 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks, Timer.OnTi
     override fun onStop() {
         super.onStop()
         voiceRec.stopRecording()
+        voicePlayer.stopPlaying()
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         voiceRec.stopRecording()
+        voicePlayer.stopPlaying()
         _binding = null
     }
 }

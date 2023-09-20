@@ -21,13 +21,24 @@
 
         <ImageView
             android:id="@+id/play_btn"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:src="@drawable/play_icon_2"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             android:layout_marginStart="20dp"/>
+
+        <ImageView
+            android:id="@+id/stop_btn"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/stop_rec_icon"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="20dp"
+            android:visibility="gone"/>
 
         <TextView
             android:id="@+id/file_name"
