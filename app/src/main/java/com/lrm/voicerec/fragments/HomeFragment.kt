@@ -1,7 +1,12 @@
 package com.lrm.voicerec.fragments
 
 import android.Manifest
+import android.app.AlertDialog
 import android.content.Context
+import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.VibrationEffect
@@ -14,6 +19,7 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import com.bumptech.glide.Glide
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.lrm.voicerec.R
 import com.lrm.voicerec.VoiceRecApplication
@@ -21,7 +27,6 @@ import com.lrm.voicerec.adapter.RecListAdapter
 import com.lrm.voicerec.constants.READ_AUDIO_PERMISSION_CODE
 import com.lrm.voicerec.constants.RECORD_AUDIO_PERMISSION_CODE
 import com.lrm.voicerec.constants.WRITE_EXTERNAL_STORAGE_PERMISSION_CODE
-import com.lrm.voicerec.database.AudioFile
 import com.lrm.voicerec.databinding.FragmentHomeBinding
 import com.lrm.voicerec.utils.Timer
 import com.lrm.voicerec.utils.VoiceRecorder
@@ -29,6 +34,7 @@ import com.lrm.voicerec.viewmodel.RecViewModel
 import com.lrm.voicerec.viewmodel.RecViewModelFactory
 import com.vmadalin.easypermissions.EasyPermissions
 import com.vmadalin.easypermissions.dialogs.SettingsDialog
+import de.hdodenhof.circleimageview.CircleImageView
 
 class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks, Timer.OnTimeTickListener {
 
@@ -75,19 +81,29 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks, Timer.OnTi
 
         if (!checkPermissions()) showPermissionsRequiredDialog()
 
-        val list = listOf(AudioFile(1, "Test 1"),
-            AudioFile(2, "Test 2"),
-            AudioFile(3, "Test 3")
-        )
-
         val adapter = RecListAdapter(requireContext())
         binding.recRv.adapter = adapter
-        adapter.submitList(list)
+
+        recViewModel.getAll.observe(this.viewLifecycleOwner) {list ->
+            if (list.isEmpty()) {
+                binding.noRecordings.visibility = View.VISIBLE
+                binding.recRv.visibility = View.INVISIBLE
+            } else {
+                binding.noRecordings.visibility = View.INVISIBLE
+                binding.recRv.visibility = View.VISIBLE
+                list.let { adapter.submitList(it) }
+            }
+        }
 
         binding.startRec.setOnClickListener { startRecording() }
         binding.pauseRec.setOnClickListener { pauseRecording() }
         binding.resumeRec.setOnClickListener { resumeRecording() }
         binding.stopRec.setOnClickListener { stopRecording() }
+
+        binding.appName.setOnLongClickListener {
+            showDeveloperInfoDialog()
+            true
+        }
     }
 
     private fun startRecording() {
@@ -147,6 +163,34 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks, Timer.OnTi
 
     private fun vibrateOnTap() {
         vibrator.vibrate(VibrationEffect.createOneShot(100, VibrationEffect.DEFAULT_AMPLITUDE))
+    }
+
+    private fun showDeveloperInfoDialog() {
+        val dialogView = requireActivity().layoutInflater.inflate(R.layout.custom_developer_info, null)
+        val imageLink = "https://firebasestorage.googleapis.com/v0/b/gdg-vizag-f9bf0.appspot.com/o/gdg_vizag%2Fdeveloper%2FRammohan_L_pic.png?alt=media&token=6e55ba28-e0ca-45c6-b50b-be1955da2566"
+        val devImage = dialogView.findViewById<CircleImageView>(R.id.dev_image)
+        Glide.with(requireContext()).load(imageLink).placeholder(R.drawable.loading_icon_anim).into(devImage)
+
+        val devGithubLink = dialogView.findViewById<CircleImageView>(R.id.dev_github_link)
+        val devYoutubeLink = dialogView.findViewById<CircleImageView>(R.id.dev_youtube_link)
+
+        devGithubLink.setOnClickListener {
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/JungleMystic"))
+            startActivity(intent)
+        }
+
+        devYoutubeLink.setOnClickListener {
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://youtube.com/@junglemystic"))
+            startActivity(intent)
+        }
+
+        val builder = AlertDialog.Builder(requireContext())
+        builder.setView(dialogView)
+        builder.setCancelable(true)
+
+        val developerDialog = builder.create()
+        developerDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        developerDialog.show()
     }
 
     private fun hasRecordAudioPermission(): Boolean =

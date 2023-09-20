@@ -9,5 +9,13 @@
     <string name="chronometer_text">00:00</string>
     <string name="home">Home</string>
     <string name="recordings">Recordings</string>
+    <string name="no_recordings">No Recordings…</string>
+
+    <string name="developer_info">Developer Info</string>
+    <string name="dev_name">Rammohan Locharla</string>
+    <string name="code_name">code name</string>
+    <string name="dev_code_name">Jungle Mystic</string>
+    <string name="about_me">About Me</string>
+    <string name="dev_about">CA Aspirant by academics &amp; Android Kotlin Developer by passion. \n \n Pet Lover, Music Lover, Foodie, sometimes cook.</string>
 
 </resources>
