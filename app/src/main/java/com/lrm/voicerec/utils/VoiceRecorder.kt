@@ -15,8 +15,11 @@ import kotlin.random.Random
 
 class VoiceRecorder(private val context: Context) {
 
-    var recorder: MediaRecorder? = null
+    private var recorder: MediaRecorder? = null
     var recordingStatus = "Idle"
+
+    var filePath = ""
+    var fileName = ""
 
     fun createDirectory() {
         Log.i(TAG, "createDirectory is called")
@@ -36,11 +39,12 @@ class VoiceRecorder(private val context: Context) {
     }
 
     fun startRecording() {
+        filePath = getOutputPath()
         createRecorder().apply {
             setAudioSource(MediaRecorder.AudioSource.MIC)
             setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
             setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
-            setOutputFile(getOutputPath())
+            setOutputFile(filePath)
             prepare()
             start()
             recorder = this
@@ -69,10 +73,11 @@ class VoiceRecorder(private val context: Context) {
     }
 
     private fun getOutputPath(): String {
-        return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString() + "/$APP_FOLDER_NAME/${getFileName()}"
+        fileName = getTheFileName()
+        return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString() + "/$APP_FOLDER_NAME/$fileName"
     }
 
-    private fun getFileName(): String {
+    private fun getTheFileName(): String {
         val sdf = SimpleDateFormat("dd-MM-yyy hh-mm a", Locale.getDefault())
         val date = Date()
         return "VoiceRec${Random.nextInt(999, 9999)} ${sdf.format(date)}.m4a"

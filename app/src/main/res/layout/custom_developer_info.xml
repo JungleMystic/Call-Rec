@@ -143,7 +143,6 @@
                 android:text="@string/dev_about"
                 android:textSize="14sp"
                 android:fontFamily="@font/poppins_regular"
-                android:textStyle="bold"
                 app:layout_constraintTop_toBottomOf="@id/about_me_title"
                 app:layout_constraintStart_toStartOf="@id/dev_image"
                 app:layout_constraintEnd_toEndOf="parent"

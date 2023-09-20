@@ -12,6 +12,7 @@ import android.os.Bundle
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -26,6 +27,7 @@ import com.lrm.voicerec.VoiceRecApplication
 import com.lrm.voicerec.adapter.RecListAdapter
 import com.lrm.voicerec.constants.READ_AUDIO_PERMISSION_CODE
 import com.lrm.voicerec.constants.RECORD_AUDIO_PERMISSION_CODE
+import com.lrm.voicerec.constants.TAG
 import com.lrm.voicerec.constants.WRITE_EXTERNAL_STORAGE_PERMISSION_CODE
 import com.lrm.voicerec.databinding.FragmentHomeBinding
 import com.lrm.voicerec.utils.Timer
@@ -81,7 +83,7 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks, Timer.OnTi
 
         if (!checkPermissions()) showPermissionsRequiredDialog()
 
-        val adapter = RecListAdapter(requireContext())
+        val adapter = RecListAdapter(requireActivity(), requireContext(), recViewModel)
         binding.recRv.adapter = adapter
 
         recViewModel.getAll.observe(this.viewLifecycleOwner) {list ->
@@ -154,6 +156,8 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks, Timer.OnTi
         binding.pauseStopLl.visibility = View.INVISIBLE
         binding.startRec.visibility = View.VISIBLE
         binding.recordingStatus.visibility = View.INVISIBLE
+        recViewModel.addFile(voiceRec.fileName, voiceRec.filePath, "")
+        Log.i(TAG, "stopRecording -> filePath: ${voiceRec.filePath} and fileName: ${voiceRec.fileName}")
         Toast.makeText(requireContext(), "Recording stopped...", Toast.LENGTH_SHORT).show()
     }
 

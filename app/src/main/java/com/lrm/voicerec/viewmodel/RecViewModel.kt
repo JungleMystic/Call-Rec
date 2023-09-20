@@ -25,6 +25,12 @@ class RecViewModel(
         insertFile(audioFile)
     }
 
+    fun deleteFile(audioFile: AudioFile) {
+        viewModelScope.launch {
+            audioFileDao.delete(audioFile)
+        }
+    }
+
 }
 
 class RecViewModelFactory(private val audioFileDao: AudioFileDao) : ViewModelProvider.Factory {
