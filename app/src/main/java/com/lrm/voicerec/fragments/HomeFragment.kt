@@ -69,7 +69,10 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks, Timer.OnTi
 
         if (!checkPermissions()) showPermissionsRequiredDialog()
 
-        val list = listOf(AudioFile(1, "Test 1"), AudioFile(2, "Test 2"))
+        val list = listOf(AudioFile(1, "Test 1"),
+            AudioFile(2, "Test 2"),
+            AudioFile(3, "Test 3")
+        )
 
         val adapter = RecListAdapter(requireContext())
         binding.recRv.adapter = adapter
@@ -91,6 +94,7 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks, Timer.OnTi
         vibrateOnTap()
 
         binding.timer.visibility = View.VISIBLE
+        binding.recRv.visibility = View.INVISIBLE
         binding.startRec.visibility = View.GONE
         binding.pauseStopLl.visibility = View.VISIBLE
         //Toast.makeText(requireContext(), "Recording Audio...", Toast.LENGTH_SHORT).show()
@@ -124,6 +128,7 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks, Timer.OnTi
 
         binding.timer.text = resources.getString(R.string.chronometer_text)
         binding.timer.visibility = View.INVISIBLE
+        binding.recRv.visibility = View.VISIBLE
         binding.pauseStopLl.visibility = View.INVISIBLE
         binding.startRec.visibility = View.VISIBLE
         binding.recordingStatus.visibility = View.INVISIBLE

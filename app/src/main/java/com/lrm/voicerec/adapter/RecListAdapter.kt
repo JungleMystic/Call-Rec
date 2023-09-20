@@ -16,7 +16,7 @@ class RecListAdapter(
     inner class RecViewHolder(private val binding: RecListItemBinding
     ): RecyclerView.ViewHolder(binding.root) {
         fun bindData(audioFile: AudioFile) {
-            binding.title.text = audioFile.title
+            binding.title.text = audioFile.fileName
         }
     }
 
@@ -26,7 +26,7 @@ class RecListAdapter(
         }
 
         override fun areContentsTheSame(oldItem: AudioFile, newItem: AudioFile): Boolean {
-            return oldItem.title == newItem.title
+            return oldItem.fileName == newItem.fileName
         }
     }
 
@@ -37,7 +37,7 @@ class RecListAdapter(
     }
 
     override fun onBindViewHolder(holder: RecViewHolder, position: Int) {
-        val file = getItem(position)
-        holder.bindData(file)
+        val audioFile = getItem(position)
+        holder.bindData(audioFile)
     }
 }
