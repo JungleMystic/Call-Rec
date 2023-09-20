@@ -30,7 +30,7 @@
             android:layout_marginStart="20dp"/>
 
         <TextView
-            android:id="@+id/title"
+            android:id="@+id/file_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             tools:text="VoiceRec4321 20-09-2023 06-36 AM"
@@ -42,7 +42,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             android:layout_marginBottom="12dp"
             android:layout_marginTop="15dp"
-            android:layout_marginStart="20dp"/>
+            android:layout_marginStart="10dp"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

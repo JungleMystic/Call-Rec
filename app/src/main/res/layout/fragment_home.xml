@@ -94,7 +94,7 @@
         app:layout_constraintTop_toBottomOf="@id/recordings_title"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="100dp"
         android:visibility="invisible"/>
 
     <TextView
@@ -111,9 +111,9 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:background="@drawable/round_bg"
-        android:elevation="10dp"
+        android:elevation="5dp"
         android:visibility="invisible"
-        tools:visibility="invisible"/>
+        tools:visibility="visible"/>
 
     <ImageView
         android:id="@+id/start_rec"
@@ -154,15 +154,17 @@
 
         <ImageView
             android:id="@+id/pause_rec"
-            android:layout_width="60dp"
-            android:layout_height="70dp"
+            android:layout_width="55dp"
+            android:layout_height="55dp"
+            android:layout_gravity="center_vertical"
             android:contentDescription="@null"
             android:src="@drawable/pause_icon" />
 
         <ImageView
             android:id="@+id/resume_rec"
-            android:layout_width="60dp"
-            android:layout_height="70dp"
+            android:layout_width="55dp"
+            android:layout_height="55dp"
+            android:layout_gravity="center_vertical"
             android:src="@drawable/play_icon"
             android:contentDescription="@null"
             android:visibility="gone"/>

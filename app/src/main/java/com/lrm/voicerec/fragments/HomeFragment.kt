@@ -16,6 +16,8 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -56,6 +58,14 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks, Timer.OnTi
 
     private var fileDuration = ""
     private lateinit var recordingsList: List<AudioFile>
+
+    private val alphaUp: Animation by lazy {
+        AnimationUtils.loadAnimation(requireContext(), R.anim.alpha_up)
+    }
+
+    private val alphaDown: Animation by lazy {
+        AnimationUtils.loadAnimation(requireContext(), R.anim.alpha_down)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -123,7 +133,7 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks, Timer.OnTi
         timer.startTimer()
         vibrateOnTap()
 
-        binding.timer.visibility = View.VISIBLE
+        binding.timer.startAnimation(alphaUp)
         binding.recRv.visibility = View.INVISIBLE
         binding.startRec.visibility = View.GONE
         binding.pauseStopLl.visibility = View.VISIBLE
@@ -160,6 +170,7 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks, Timer.OnTi
         vibrateOnTap()
 
         binding.timer.text = resources.getString(R.string.chronometer_text)
+        binding.timer.startAnimation(alphaDown)
         binding.timer.visibility = View.INVISIBLE
         binding.recRv.visibility = View.VISIBLE
         binding.pauseStopLl.visibility = View.INVISIBLE

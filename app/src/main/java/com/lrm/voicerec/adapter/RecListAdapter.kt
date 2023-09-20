@@ -28,7 +28,7 @@ class RecListAdapter(
     inner class RecViewHolder(private val binding: RecListItemBinding
     ): RecyclerView.ViewHolder(binding.root) {
         fun bindData(audioFile: AudioFile) {
-            binding.title.text = audioFile.fileName
+            binding.fileName.text = audioFile.fileName
         }
     }
 
