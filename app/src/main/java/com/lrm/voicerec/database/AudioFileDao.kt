@@ -5,7 +5,6 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -16,9 +15,6 @@ interface AudioFileDao {
 
     @Query("SELECT * FROM audio_files_table ORDER BY id DESC")
     fun getAll(): Flow<List<AudioFile>>
-
-    @Update
-    suspend fun update(audioFile: AudioFile)
 
     @Delete
     suspend fun delete(audioFile: AudioFile)

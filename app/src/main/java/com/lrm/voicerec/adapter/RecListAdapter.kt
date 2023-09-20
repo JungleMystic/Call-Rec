@@ -5,6 +5,7 @@ import android.app.AlertDialog
 import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.TextView
@@ -12,9 +13,11 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.lrm.voicerec.R
+import com.lrm.voicerec.constants.TAG
 import com.lrm.voicerec.database.AudioFile
 import com.lrm.voicerec.databinding.RecListItemBinding
 import com.lrm.voicerec.viewmodel.RecViewModel
+import java.io.File
 
 class RecListAdapter(
     private val activity: Activity,
@@ -69,6 +72,11 @@ class RecListAdapter(
 
         yesTv.setOnClickListener {
             recViewModel.deleteFile(audioFile)
+            try {
+                File(audioFile.filePath).delete()
+            } catch (e: Exception) {
+                Log.i(TAG, "showDeleteDialog: Exception occurred while deleting file -> ${e.message}")
+            }
             deleteDialog.dismiss()
         }
 

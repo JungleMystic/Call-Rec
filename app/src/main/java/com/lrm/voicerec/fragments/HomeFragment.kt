@@ -53,6 +53,8 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks, Timer.OnTi
     private lateinit var timer: Timer
     private lateinit var vibrator: Vibrator
 
+    private var fileDuration = ""
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         requireActivity().window.statusBarColor =
@@ -156,13 +158,14 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks, Timer.OnTi
         binding.pauseStopLl.visibility = View.INVISIBLE
         binding.startRec.visibility = View.VISIBLE
         binding.recordingStatus.visibility = View.INVISIBLE
-        recViewModel.addFile(voiceRec.fileName, voiceRec.filePath, "")
+        recViewModel.addFile(voiceRec.fileName, voiceRec.filePath, fileDuration)
         Log.i(TAG, "stopRecording -> filePath: ${voiceRec.filePath} and fileName: ${voiceRec.fileName}")
         Toast.makeText(requireContext(), "Recording stopped...", Toast.LENGTH_SHORT).show()
     }
 
     override fun onTimerTick(duration: String) {
-        binding.timer.text = duration
+        fileDuration = duration
+        binding.timer.text = fileDuration
     }
 
     private fun vibrateOnTap() {
