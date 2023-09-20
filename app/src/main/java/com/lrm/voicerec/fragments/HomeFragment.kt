@@ -29,6 +29,7 @@ import com.lrm.voicerec.constants.READ_AUDIO_PERMISSION_CODE
 import com.lrm.voicerec.constants.RECORD_AUDIO_PERMISSION_CODE
 import com.lrm.voicerec.constants.TAG
 import com.lrm.voicerec.constants.WRITE_EXTERNAL_STORAGE_PERMISSION_CODE
+import com.lrm.voicerec.database.AudioFile
 import com.lrm.voicerec.databinding.FragmentHomeBinding
 import com.lrm.voicerec.utils.Timer
 import com.lrm.voicerec.utils.VoiceRecorder
@@ -43,7 +44,7 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks, Timer.OnTi
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
 
-    private val recViewModel: RecViewModel by activityViewModels() {
+    private val recViewModel: RecViewModel by activityViewModels {
         RecViewModelFactory(
             (activity?.application as VoiceRecApplication).database.audioFileDao()
         )
@@ -54,6 +55,7 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks, Timer.OnTi
     private lateinit var vibrator: Vibrator
 
     private var fileDuration = ""
+    private lateinit var recordingsList: List<AudioFile>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -89,7 +91,9 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks, Timer.OnTi
         binding.recRv.adapter = adapter
 
         recViewModel.getAll.observe(this.viewLifecycleOwner) {list ->
-            if (list.isEmpty()) {
+            recordingsList = list
+
+            if (recordingsList.isEmpty()) {
                 binding.noRecordings.visibility = View.VISIBLE
                 binding.recRv.visibility = View.INVISIBLE
             } else {
@@ -123,7 +127,10 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks, Timer.OnTi
         binding.recRv.visibility = View.INVISIBLE
         binding.startRec.visibility = View.GONE
         binding.pauseStopLl.visibility = View.VISIBLE
-        //Toast.makeText(requireContext(), "Recording Audio...", Toast.LENGTH_SHORT).show()
+        binding.recordingsTitle.visibility = View.INVISIBLE
+        binding.recordingsUnderline.visibility = View.INVISIBLE
+        binding.noRecordings.visibility = View.INVISIBLE
+        Log.i(TAG, "Recording Audio...")
     }
 
     private fun pauseRecording() {
@@ -158,6 +165,17 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks, Timer.OnTi
         binding.pauseStopLl.visibility = View.INVISIBLE
         binding.startRec.visibility = View.VISIBLE
         binding.recordingStatus.visibility = View.INVISIBLE
+        binding.recordingsTitle.visibility = View.VISIBLE
+        binding.recordingsUnderline.visibility = View.VISIBLE
+
+        if (recordingsList.isEmpty()) {
+            binding.noRecordings.visibility = View.VISIBLE
+            binding.recRv.visibility = View.INVISIBLE
+        } else {
+            binding.noRecordings.visibility = View.INVISIBLE
+            binding.recRv.visibility = View.VISIBLE
+        }
+
         recViewModel.addFile(voiceRec.fileName, voiceRec.filePath, fileDuration)
         Log.i(TAG, "stopRecording -> filePath: ${voiceRec.filePath} and fileName: ${voiceRec.fileName}")
         Toast.makeText(requireContext(), "Recording stopped...", Toast.LENGTH_SHORT).show()

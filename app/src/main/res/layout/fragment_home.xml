@@ -61,6 +61,7 @@
         android:layout_marginStart="20dp"/>
 
     <View
+        android:id="@+id/recordings_underline"
         android:layout_width="0dp"
         android:layout_height="1dp"
         android:layout_marginTop="-2dp"
@@ -81,7 +82,8 @@
         app:layout_constraintBottom_toTopOf="@id/start_rec"
         android:layout_marginTop="10dp"
         android:paddingTop="5dp"
-        android:layout_marginBottom="20dp"/>
+        android:layout_marginBottom="20dp"
+        tools:visibility="invisible"/>
 
     <TextView
         android:id="@+id/no_recordings"
