@@ -16,6 +16,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.lrm.voicerec.R
+import com.lrm.voicerec.VoiceRecApplication
 import com.lrm.voicerec.adapter.RecListAdapter
 import com.lrm.voicerec.constants.READ_AUDIO_PERMISSION_CODE
 import com.lrm.voicerec.constants.RECORD_AUDIO_PERMISSION_CODE
@@ -25,6 +26,7 @@ import com.lrm.voicerec.databinding.FragmentHomeBinding
 import com.lrm.voicerec.utils.Timer
 import com.lrm.voicerec.utils.VoiceRecorder
 import com.lrm.voicerec.viewmodel.RecViewModel
+import com.lrm.voicerec.viewmodel.RecViewModelFactory
 import com.vmadalin.easypermissions.EasyPermissions
 import com.vmadalin.easypermissions.dialogs.SettingsDialog
 
@@ -33,7 +35,11 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks, Timer.OnTi
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
 
-    private val recViewModel: RecViewModel by activityViewModels()
+    private val recViewModel: RecViewModel by activityViewModels() {
+        RecViewModelFactory(
+            (activity?.application as VoiceRecApplication).database.audioFileDao()
+        )
+    }
 
     private lateinit var voiceRec: VoiceRecorder
     private lateinit var timer: Timer
